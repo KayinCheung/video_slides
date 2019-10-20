@@ -1,4 +1,4 @@
-import { ADD_SLIDE, MODIFY_SLIDE, REPOSITION_SLIDE } from '../actions/types'
+import { ADD_SLIDE, MODIFY_SLIDE, REPOSITION_SLIDE, DELETE_SLIDE } from '../actions/types'
 
 const initialState = {
     slides: [{
@@ -6,12 +6,13 @@ const initialState = {
         duration: 0,
         caption: '',
         captionColor: 'black',
+        canvasData: '',
         error: true
     }]
 }
 
 export default function (state = initialState, action) {
-    let slides
+    let slides, slide1, slide2
     switch (action.type) {
 
         //Add an empty slide when users click the + button
@@ -21,6 +22,7 @@ export default function (state = initialState, action) {
                 duration: 0,
                 caption: '',
                 captionColor: 'black',
+                canvasData: '',
                 error: true
             }
             console.log((state.slides).concat(slide))
@@ -39,6 +41,7 @@ export default function (state = initialState, action) {
                 caption: action.caption,
                 captionColor: action.captionColor,
                 error: action.error,
+                canvasData: action.canvasData
             }
             return {
                 ...state,
@@ -49,12 +52,21 @@ export default function (state = initialState, action) {
         case REPOSITION_SLIDE:
             //Perform deep copy to change object reference
             slides = JSON.parse(JSON.stringify(state.slides));
-            console.log(slides)
-            let slide1 = (slides[action.slideNumber])
-            let slide2 = (slides[action.newPosition])
+
+            slide1 = (slides[action.slideNumber])
+            slide2 = (slides[action.newPosition])
             slides[action.newPosition] = slide1
             slides[action.slideNumber] = slide2
-            console.log(slides)
+
+            return {
+                ...state,
+                slides: slides
+            }
+
+        case DELETE_SLIDE:
+            slides = JSON.parse(JSON.stringify(state.slides));
+            slides.splice(action.slideNumber, 1)
+
             return {
                 ...state,
                 slides: slides

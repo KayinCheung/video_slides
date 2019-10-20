@@ -3,6 +3,7 @@ import './App.css';
 
 import SlidesPreview from './SlidesPreview'
 import SlideCreation from './SlideCreation'
+import GenerateVideo from './GenerateVideo'
 
 import { connect } from 'react-redux'
 
@@ -16,7 +17,8 @@ class Body extends Component {
         <label className="label has-text-centered">Modifying Slide {this.props.current_slide}</label>
         <br />
         <SlideCreation key={this.props.current_slide} />
-        <button className="button is-medium is-link" disabled>Generate Video</button>
+        
+
 
       </div>
     );

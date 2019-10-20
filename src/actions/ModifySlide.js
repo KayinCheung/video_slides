@@ -1,6 +1,6 @@
 import { MODIFY_SLIDE } from './types'
 
-export const ModifySlide = (image, duration, caption, captionColor, slideNumber) => dispatch => {
+export const ModifySlide = (image, duration, caption, captionColor, slideNumber, canvasData) => dispatch => {
 
     //Perform all error checking here. Eg empty captions, invalid duration
     let error = false
@@ -15,6 +15,7 @@ export const ModifySlide = (image, duration, caption, captionColor, slideNumber)
         caption: caption,
         captionColor: captionColor,
         slideNumber: slideNumber,
+        canvasData: canvasData,
         error: error
     })
 }

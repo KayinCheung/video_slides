@@ -16,18 +16,17 @@ class SlidesPreview extends Component {
       <div>
         <div className="is-flex">
           {(data).map((row, i) => (
-            <div>
+            <div key={`slide${i}`}>
               <p>{i}</p>
               <div
-                key={`slide${i}`}
+
                 className={`has-text-centered clickableBox box paddedBox
                              ${i == this.props.current_slide ? `selectedBox` : null}`}
                 style={{ width: "100px", height: "100px" }}
                 onClick={() => { this.props.handleSlideSelection(i) }}>
-
-
-                <img src={this.props.slides[i].image} />
-
+                <div className="is-vcentered">
+                  <img src={this.props.slides[i].canvasData} />
+                </div>
 
               </div>
             </div>

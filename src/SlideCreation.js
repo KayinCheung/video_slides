@@ -5,6 +5,9 @@ import { connect } from 'react-redux'
 import { AddSlide } from './actions/AddSlide'
 import { ModifySlide } from './actions/ModifySlide'
 import { RepositionSlide } from './actions/RepositionSlide'
+import { DeleteSlide } from './actions/DeleteSlide'
+
+const aspectRatio = 16/9
 
 class SlideCreation extends Component {
     constructor(props) {
@@ -12,7 +15,8 @@ class SlideCreation extends Component {
         this.state = {
             image: '',
             caption: '',
-            captionColor: 'black'
+            captionColor: 'black',
+            canvasData: ''
         }
 
         this.handleImgUpload = this.handleImgUpload.bind(this)
@@ -23,23 +27,55 @@ class SlideCreation extends Component {
         document.getElementById("duration").options.selectedIndex = this.props.slides[this.props.current_slide].duration
     }
 
-    drawImage() {
-        var canvas = document.getElementById("myCanvas");
-        var context = canvas.getContext("2d");
-        var imageObj = new Image();
+    async drawImage() {
+        let canvas = document.getElementById("myCanvas");
+        let context = canvas.getContext("2d");
+
+
+        let backgroundImg = new Image()
+        backgroundImg.src = this.state.image || this.props.slides[this.props.current_slide].image;
+        backgroundImg.onload = () => {
+            context.drawImage(backgroundImg, 0, 0, 400, 300);
+           
+        let imageObj = new Image();
+        imageObj.src = this.state.image || this.props.slides[this.props.current_slide].image;
         imageObj.onload = () => {
-            context.drawImage(imageObj, 0, 0, 400, 300);
+
+            let width = imageObj.naturalWidth
+            let height = imageObj.naturalHeight
+
+            if (height*aspectRatio > width){
+                
+                width = width/height * 300
+                height = 300
+
+            } else if (height*aspectRatio < width){
+                height = height/width * 400
+                width = 400
+            } else {
+                width = 400
+                height = 300
+            }
+
+            context.drawImage(imageObj, (canvas.width/2 - width/2), (canvas.height/2 - height/2), width, height);
+            
             context.font = "20pt Calibri";
             context.fillStyle = "#ffffff";
             context.fillText(this.state.caption || this.props.slides[this.props.current_slide].caption, 20, 20);
+            //canvas.style.webkitFilter = "blur(3px)";
+            this.setState({canvasData: canvas.toDataURL()})
+
         };
-        imageObj.src = this.state.image || this.props.slides[this.props.current_slide].image;
-        context.drawImage(imageObj, 0, 0, imageObj.width, imageObj.height,
-            0, 0, canvas.width, canvas.height)
+    }
     }
 
     async handleImgUpload(event) {
-        await this.setState({ image: URL.createObjectURL(event.target.files[0]) });
+        try{
+            await this.setState({ image: URL.createObjectURL(event.target.files[0]) });
+        } catch (error){
+            console.log(error)
+        }
+
         this.drawImage()
     };
 
@@ -94,12 +130,15 @@ class SlideCreation extends Component {
                                             document.getElementById("duration").options.selectedIndex,
                                             (this.state.caption || caption),
                                             this.state.captionColor,
-                                            this.props.current_slide)
+                                            this.props.current_slide,
+                                            this.state.canvasData)
                                     }>
                                     Submit</button>
                             </div>
                             <div className="control">
-                                <button className="button is-link" disabled>Delete Slide</button>
+                                <button className="button is-link" 
+                                    onClick={() => this.props.DeleteSlide(this.props.current_slide, this.props.slides.length)}>
+                                    Delete Slide</button>
                             </div>
                             <div className="control">
                                 <button className="button is-success"
@@ -134,4 +173,4 @@ const mapStateToProps = state => ({
     lastUpdate: state.slide.lastUpdate
 })
 
-export default connect(mapStateToProps, { AddSlide, ModifySlide, RepositionSlide })(SlideCreation);
+export default connect(mapStateToProps, { AddSlide, ModifySlide, RepositionSlide, DeleteSlide })(SlideCreation);
