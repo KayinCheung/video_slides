@@ -3,7 +3,6 @@ import './App.css';
 
 import SlidesPreview from './SlidesPreview'
 import SlideCreation from './SlideCreation'
-import GenerateVideo from './GenerateVideo'
 
 import { connect } from 'react-redux'
 
